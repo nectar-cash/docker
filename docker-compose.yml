@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  auction:
+    depends_on:
+      - postgres-auction
+    container_name: auction
+    stdin_open: true
+    tty: true
+    build:
+      context: ../auction
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 5s
+      start_period: 5s
+      retries: 5
+    ports:
+      - "11011:8000"
+
+  rpc:
+    depends_on:
+      auction:
+        condition: service_healthy
+    container_name: rpc
+    stdin_open: true
+    tty: true
+    build:
+      context: ../rpc
+    ports:
+      - "11010:8000"
+
+  searcher-arbitrage:
+    depends_on:
+      auction:
+        condition: service_healthy
+    container_name: searcher-arbitrage
+    stdin_open: true
+    tty: true
+    build:
+      context: ../searcher-arbitrage
+
+  backend:
+    container_name: backend
+    stdin_open: true
+    tty: true
+    build:
+      context: ../backend
+    ports:
+      - "11012:8000"
+
+  frontend:
+    container_name: frontend
+    stdin_open: true
+    tty: true
+    build:
+      context: ../frontend
+    ports:
+      - "11013:8080"
+
+  postgres-auction:
+    image: postgres:15.1
+    restart: always
+    hostname: auctiondb
+    environment:
+      POSTGRES_USER: auction
+      POSTGRES_PASSWORD: auction
+    volumes:
+      - ../data/postgres-auction:/var/lib/postgresql/data
