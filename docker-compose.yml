@@ -35,7 +35,8 @@ services:
 
   auction:
     depends_on:
-      - postgres-auction
+      postgres-auction:
+        condition: service_healthy
     container_name: auction
     stdin_open: true
     tty: true
@@ -97,6 +98,12 @@ services:
     environment:
       POSTGRES_USER: auction
       POSTGRES_PASSWORD: auction
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U auction -d auction'"]
+      interval: 10s
+      timeout: 60s
+      retries: 10
+      start_period: 10s
     volumes:
       - ../data/postgres-auction:/var/lib/postgresql/data
 
