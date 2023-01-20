@@ -48,8 +48,7 @@ services:
       timeout: 5s
       start_period: 5s
       retries: 5
-    ports:
-      - "11011:8000"
+    restart: unless-stopped
 
   rpc:
     depends_on:
@@ -60,8 +59,7 @@ services:
     tty: true
     build:
       context: ../rpc
-    ports:
-      - "11010:8000"
+    restart: unless-stopped
 
   searcher-arbitrage:
     depends_on:
@@ -72,6 +70,7 @@ services:
     tty: true
     build:
       context: ../searcher-arbitrage
+    restart: unless-stopped
 
   backend:
     container_name: backend
@@ -79,8 +78,7 @@ services:
     tty: true
     build:
       context: ../backend
-    ports:
-      - "11012:8000"
+    restart: unless-stopped
 
   frontend:
     container_name: frontend
@@ -88,8 +86,7 @@ services:
     tty: true
     build:
       context: ../frontend
-    ports:
-      - "11013:8080"
+    restart: unless-stopped
 
   postgres-auction:
     image: postgres:15.1
