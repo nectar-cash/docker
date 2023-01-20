@@ -18,6 +18,7 @@ services:
       retries: 5
     ports:
       - "11011:8000"
+    restart: unless-stopped
 
   rpc:
     depends_on:
@@ -30,6 +31,7 @@ services:
       context: ../rpc
     ports:
       - "11010:8000"
+    restart: unless-stopped
 
   searcher-arbitrage:
     depends_on:
@@ -40,6 +42,7 @@ services:
     tty: true
     build:
       context: ../searcher-arbitrage
+    restart: unless-stopped
 
   backend:
     container_name: backend
@@ -49,6 +52,7 @@ services:
       context: ../backend
     ports:
       - "11012:8000"
+    restart: unless-stopped
 
   frontend:
     container_name: frontend
@@ -56,8 +60,10 @@ services:
     tty: true
     build:
       context: ../frontend
+      dockerfile: Dockerfile.dev
     ports:
-      - "11013:8080"
+      - "11013:5173"
+    restart: unless-stopped
 
   postgres-auction:
     image: postgres:15.1
